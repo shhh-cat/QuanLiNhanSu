@@ -1,5 +1,6 @@
 package BLL;
 
+import DAL.Eloquent.Eloquent;
 import DAL.EmployeeDAL;
 
 import javax.swing.*;
@@ -9,8 +10,13 @@ import java.util.Map;
 public class EmployeeBLL {
 
 
-    public static String[][] all() {
-        return EmployeeDAL.all();
+    public static String[][] all(Map<String, Integer> sort) {
+        return EmployeeDAL.all(sort);
+    }
+    public static String[][] search(String key, Object value) {
+        if (key.equals("id") || key.equals("gender"))
+            return EmployeeDAL.get(key,value, Eloquent.EQUAL);
+        return EmployeeDAL.get(key,value, Eloquent.LIKE);
     }
     public static Map<Integer,Object> create(Map<String, Object> values) {
         Map<Integer,Object> response = new HashMap<Integer,Object>();

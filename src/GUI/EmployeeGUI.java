@@ -1,18 +1,19 @@
 package GUI;
 
-import BLL.DTO.Employee;
 import BLL.EmployeeBLL;
 import BLL.ResponseType;
-import DAL.EmployeeDAL;
-import GUI.Layout.Action;
+import GUI.ActionInterface.ManagerAction;
 import GUI.Layout.ManagerLayout;
 import GUI.Ultilities.FieldPanel;
+import com.github.javafaker.Faker;
 
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.Map;
 
 public class EmployeeGUI {
-    private ManagerLayout managerLayout;
+    private final ManagerLayout managerLayout;
+
     public EmployeeGUI() {
         String[] columns = new String[] {
             "id",
@@ -36,28 +37,34 @@ public class EmployeeGUI {
             typesContent[i] = (i != 8) ? null : new String[] {"Nam", "Nữ"};
         }
 
-
-
-        managerLayout = new ManagerLayout("Employee Manager", columns, types, typesContent, new Action() {
+        managerLayout = new ManagerLayout("Employee Manager", columns, types, typesContent, new ManagerAction() {
             @Override
             public void add(Map<String, Object> values) {
-                Map<Integer, Object> res = EmployeeBLL.create(values);
+                int q = JOptionPane.showConfirmDialog(managerLayout,DataModal(values)+ "Are you sure ?","Confirm",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                if (q == JOptionPane.YES_OPTION) {
+                    Map<Integer, Object> res = EmployeeBLL.create(values);
+                    if (ResponseType.showResponse(res,managerLayout)) {
+                        managerLayout.updateTable(EmployeeBLL.all(null));
+                    }
+                }
 
-                ResponseType.showResponse(res,managerLayout);
-
-                managerLayout.setValueField(-1);
-                managerLayout.updateTable(EmployeeBLL.all());
             }
 
             @Override
             public void update(Map<String, Object> newValues, int selectedRow, Map<String, Object> oldValues) {
-                if (selectedRow < 0) JOptionPane.showMessageDialog(managerLayout,"Please select edit row!", "Warning", JOptionPane.WARNING_MESSAGE);
-                Map<Integer, Object> res = EmployeeBLL.edit(newValues,Integer.parseInt((String)newValues.get("id")),oldValues);
+                if (selectedRow < 0) {
+                    JOptionPane.showMessageDialog(managerLayout,"Please select edit row!", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                int q = JOptionPane.showConfirmDialog(managerLayout,DataModal(newValues)+ "Are you sure ?","Confirm",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                if (q == JOptionPane.YES_OPTION) {
+                    Map<Integer, Object> res = EmployeeBLL.edit(newValues,Integer.parseInt((String)newValues.get("id")),oldValues);
 
-                ResponseType.showResponse(res,managerLayout);
+                    if (ResponseType.showResponse(res,managerLayout)) {
+                        managerLayout.updateTable(EmployeeBLL.all(null));
+                    }
+                }
 
-                managerLayout.setValueField(-1);
-                managerLayout.updateTable(EmployeeBLL.all());
             }
 
             @Override
@@ -66,24 +73,49 @@ public class EmployeeGUI {
                     JOptionPane.showMessageDialog(managerLayout,"Please select edit row!", "Warning", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                int i =JOptionPane.showConfirmDialog(managerLayout,"Are you sure you want to delete this item (id "+values.get("id")+")?","Warning",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                int i =JOptionPane.showConfirmDialog(managerLayout, "Are you sure you want to delete this item ?\n" + DataModal(values),"Warning",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
                 if (i == JOptionPane.YES_OPTION) {
                     Map<Integer, Object> res = EmployeeBLL.remove(values);
 
-                    ResponseType.showResponse(res,managerLayout);
-
-                    managerLayout.setValueField(-1);
-                    managerLayout.updateTable(EmployeeBLL.all());
+                    if (ResponseType.showResponse(res,managerLayout)) {
+                        managerLayout.updateTable(EmployeeBLL.all(null));
+                    }
                 }
 
             }
 
             @Override
             public void find(Map<String, Object> values) {
+                String column = String.valueOf(JOptionPane.showInputDialog(null,"Choose field you want to search:","Search",JOptionPane.INFORMATION_MESSAGE,null,columns,null));
+                Object value = (column.equals("gender"))
+                    ? JOptionPane.showInputDialog(null,"Choose " + column + ":","Search", JOptionPane.INFORMATION_MESSAGE, null, new String[] {"Nam", "Nữ"},null)
+                    : JOptionPane.showInputDialog(null,"Keywords of "+column+":","Search",JOptionPane.INFORMATION_MESSAGE);
+                managerLayout.updateTable(EmployeeBLL.search(column,value));
+                managerLayout.searched("Result of ["+column+"]: "+value);
+            }
 
+            @Override
+            public void sort(String column, int sort) {
+                Map<String, Integer> m = new HashMap<>();
+                m.put(column,sort);
+                managerLayout.updateTable(EmployeeBLL.all(m));
+            }
+
+            @Override
+            public void showAll() {
+                managerLayout.updateTable(EmployeeBLL.all(null));
             }
         });
-        managerLayout.updateTable(EmployeeDAL.all());
+        managerLayout.updateTable(EmployeeBLL.all(null));
+    }
+
+    private String DataModal(Map<String, Object> data) {
+        StringBuilder o = new StringBuilder();
+        for (Map.Entry<String, Object> stringObjectEntry : data.entrySet()) {
+            o.append(stringObjectEntry.getKey());
+            o.append(": ").append(stringObjectEntry.getValue()).append("\n");
+        }
+        return o.toString();
     }
 
     public void hide() {

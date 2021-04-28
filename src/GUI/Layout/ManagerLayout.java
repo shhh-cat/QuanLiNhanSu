@@ -1,5 +1,7 @@
 package GUI.Layout;
 
+import DAL.Eloquent.Eloquent;
+import GUI.ActionInterface.ManagerAction;
 import GUI.Ultilities.FieldPanel;
 
 import javax.swing.*;
@@ -14,7 +16,6 @@ import java.util.*;
 
 public class ManagerLayout extends JFrame implements ActionListener {
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addBtn) action.add(getValueField());
@@ -22,12 +23,16 @@ public class ManagerLayout extends JFrame implements ActionListener {
         if (e.getSource() == deleteBtn) action.delete(getValueField(),table.getSelectedRow());
         if (e.getSource() == findBtn) action.find(getValueField());
         if (e.getSource() == clearBtn) setValueField(-1);
+        if (e.getSource() == allBtn) {
+            allBtn.setEnabled(false);
+            action.showAll();
+        }
     }
 
     String[] columnsName;
     String[][] columnsFieldContent;
     int[] columnsType;
-    Action action;
+    ManagerAction action;
     Vector<Component> components = new Vector<>();
     JPanel GUI = new JPanel(new BorderLayout(5,5));
     JPanel controlsPanel = new JPanel(new BorderLayout(4,4));
@@ -38,10 +43,14 @@ public class ManagerLayout extends JFrame implements ActionListener {
     JButton deleteBtn = new JButton("Remove");
     JButton findBtn = new JButton("Search");
     JButton clearBtn = new JButton("Clear");
+    JButton allBtn = new JButton("Show all");
     DefaultTableModel model = new DefaultTableModel();
     JTable table = new JTable();
+    JLabel tableStatus = new JLabel();
     JScrollPane scrollPane = new JScrollPane(table);
     String title ;
+    Integer columnSort = null;
+
     public void configuration() {
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -54,15 +63,14 @@ public class ManagerLayout extends JFrame implements ActionListener {
         double height = screenSize.getHeight() * 0.5;
         this.setSize((int) width, (int) height);
 
-        //GUI.setBorder(new TitledBorder("Aefewf"));
-        //controlsPanel.setBorder(new TitledBorder("Control Board") );
         fieldsControlPanel.setBorder(new TitledBorder("Fields"));
         actionControlPanel.setBorder(new TitledBorder("Action"));
 
         Dimension tablePreferred = table.getPreferredSize();
         scrollPane.setPreferredSize(
                 new Dimension(tablePreferred.width, tablePreferred.height/3) );
-
+        allBtn.setEnabled(false);
+        table.getTableHeader().setReorderingAllowed(false);
         //this.splitPane.setDividerLocation(0.8);
         this.setTitle(title);
         this.pack();
@@ -124,7 +132,7 @@ public class ManagerLayout extends JFrame implements ActionListener {
             components.add(jPanel.getInput());
             fieldsControlPanel.add(jPanel);
         }
-        actionControlPanel.add(addBtn);actionControlPanel.add(updateBtn);actionControlPanel.add(deleteBtn);actionControlPanel.add(findBtn);actionControlPanel.add(clearBtn);
+        actionControlPanel.add(addBtn);actionControlPanel.add(updateBtn);actionControlPanel.add(deleteBtn);actionControlPanel.add(findBtn);actionControlPanel.add(clearBtn);actionControlPanel.add(allBtn);
         controlsPanel.add(new JScrollPane(fieldsControlPanel),BorderLayout.CENTER);
         controlsPanel.add(new JScrollPane(actionControlPanel), BorderLayout.SOUTH);
         GUI.add(controlsPanel, BorderLayout.WEST);
@@ -138,6 +146,7 @@ public class ManagerLayout extends JFrame implements ActionListener {
         deleteBtn.addActionListener(this);
         findBtn.addActionListener(this);
         clearBtn.addActionListener(this);
+        allBtn.addActionListener(this);
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -146,25 +155,77 @@ public class ManagerLayout extends JFrame implements ActionListener {
                 setValueField(j);
             }
         });
+        table.getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int col = table.columnAtPoint(e.getPoint());
+                String name = table.getColumnName(col);
+                changeStatusHeaderTable(col,name);
+            }
+        });
+    }
+
+    public void changeStatusHeaderTable(Integer col, String name) {
+        if (columnSort == null) {
+            columnSort = col;
+            table.getTableHeader().getColumnModel().getColumn(col).setHeaderValue(name + "\u23F6");
+            action.sort(name, Eloquent.ASC);
+            table.getTableHeader().resizeAndRepaint();
+        }
+        else {
+            if (!columnSort.equals(col)){
+                table.getTableHeader().getColumnModel().getColumn(columnSort).setHeaderValue(table.getColumnName(columnSort));
+                table.getTableHeader().resizeAndRepaint();
+                table.getTableHeader().getColumnModel().getColumn(col).setHeaderValue(name+ "\u23F6");
+                action.sort(name, Eloquent.ASC);
+                table.getTableHeader().resizeAndRepaint();
+                columnSort = col;
+            }
+            else {
+                if (table.getTableHeader().getColumnModel().getColumn(col).getHeaderValue().equals(name + "\u23F6")) {
+                    table.getTableHeader().getColumnModel().getColumn(col).setHeaderValue(name + "\u23F7");
+                    action.sort(name, Eloquent.DESC);
+                }
+                else {
+                    table.getTableHeader().getColumnModel().getColumn(col).setHeaderValue(name + "\u23F6");
+                    action.sort(name, Eloquent.ASC);
+                }
+                table.getTableHeader().resizeAndRepaint();
+            }
+        }
+
     }
 
     public void createTable(){
         table.setModel(model);
         for (String s : columnsName) {
-            model.addColumn(s);
+            model.addColumn(s.substring(0,1).toUpperCase() + s.substring(1).toLowerCase());
         }
     }
 
     public void updateTable(String[][] objects) {
         model.setRowCount(0);
+        GUI.remove(tableStatus);
+        this.setContentPane(GUI);
         for (String[] object : objects) {
             Vector<String> vector = new Vector<String>(Arrays.asList(object));
             model.addRow(vector);
         }
+        setValueField(-1);
+    }
+
+    public void searched(String status) {
+        allBtn.setEnabled(true);
+        tableStatus.setText(status);
+        tableStatus.setHorizontalAlignment(SwingConstants.CENTER);
+        tableStatus.setForeground(Color.RED);
+        GUI.add(tableStatus, BorderLayout.NORTH);
+        this.setContentPane(GUI);
     }
 
 
-    public ManagerLayout(String title, String[] columns, int[] types, String[][] typesContent, Action action) {
+    public ManagerLayout(String title, String[] columns, int[] types, String[][] typesContent, ManagerAction action) {
         this.title = title;
         this.columnsName = columns;
         this.columnsType = types;

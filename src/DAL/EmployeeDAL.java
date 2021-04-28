@@ -3,8 +3,10 @@ package DAL;
 import DAL.Eloquent.Eloquent;
 import BLL.DTO.Employee;
 
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.sql.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -13,18 +15,18 @@ public class EmployeeDAL {
 
     private static Map<String, Integer> getTypesSQL() {
         Field[] fields = Employee.class.getDeclaredFields();
-        Map<String, Integer> typesql = new HashMap<>();
+        Map<String, Integer> typeSql = new HashMap<>();
         int[] t = new int[] {Types.BIGINT, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TINYINT, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP };
         for (int i = 0; i < fields.length; i++) {
-            typesql.put(fields[i].getName(),t[i]);
+            typeSql.put(fields[i].getName(),t[i]);
         }
-        return typesql;
+        return typeSql;
     }
 
-    public static String[][] all() {
+    public static String[][] all(Map<String, Integer> sort) {
         Eloquent eloquent = new Eloquent();
         Vector<Employee> vector = new Vector<>();
-        eloquent.all(Employee.class).forEach(map -> {
+        eloquent.all(Employee.class,sort).forEach(map -> {
             vector.add(new Employee(map));
         });
         eloquent.close();
@@ -37,10 +39,14 @@ public class EmployeeDAL {
 
 
     public static String[][] get(String key, Object value, int comparison) {
+
         Eloquent eloquent = new Eloquent();
         Vector<Employee> vector = new Vector<>();
         Map<String, Object> map = new HashMap<>();
-        map.put(key, value);
+        if (key.equals("gender")) {
+            value = Boolean.parseBoolean(String.valueOf(value.equals("Nam")));
+            map.put(key, (boolean)value);
+        }
         eloquent.where(Employee.class,map,comparison,getTypesSQL()).forEach(map1 -> {
             vector.add(new Employee(map1));
         });

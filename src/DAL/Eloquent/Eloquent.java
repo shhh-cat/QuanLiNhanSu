@@ -9,18 +9,31 @@ public class Eloquent extends Connector {
 
     public static final int EQUAL = 1;
     public static final int LIKE = 2;
+    public static final int ASC = 1;
+    public static final int DESC = -1;
 
     public Eloquent() {
         super();
     }
 
-    public Vector<Map<String, Object>> all(Class<?> c) {
+    public Vector<Map<String, Object>> all(Class<?> c, Map<String,Integer> sort) {
         ResultSet rs;
         Statement stmt = null;
         Vector<Map<String, Object>> vector = new Vector<>();
         try {
             stmt = getStatement();
-            rs = stmt.executeQuery("SELECT * FROM "+ c.getSimpleName().toLowerCase());
+            StringBuilder sql = new StringBuilder("SELECT * FROM " + c.getSimpleName().toLowerCase());
+            if (sort != null) {
+                sql.append(" ORDER BY ");
+                int l = sort.entrySet().size();
+                for (Map.Entry<String, Integer> stringIntegerEntry : sort.entrySet()) {
+                    sql.append(stringIntegerEntry.getKey()).append(" ").append((stringIntegerEntry.getValue() == ASC) ? "ASC" : "DESC");
+                    if (--l != 0)
+                        sql.append(", ");
+                }
+            }
+
+            rs = stmt.executeQuery(sql.toString());
             Field[] fields = c.getDeclaredFields();
             while (rs.next()) {
                 Map<String, Object> map = new HashMap<>();
@@ -50,10 +63,10 @@ public class Eloquent extends Connector {
             String condition = " WHERE ";
             for (Map.Entry<String, Object> entry: o.entrySet()){
                 switch (comparison) {
-                    case 1:
+                    case Eloquent.EQUAL:
                         condition = condition.concat(entry.getKey() + " = ?,");
                         break;
-                    case 2:
+                    case Eloquent.LIKE:
                         condition = condition.concat(entry.getKey() + " LIKE ?,");
                         break;
                     default:
@@ -68,10 +81,10 @@ public class Eloquent extends Connector {
             int i = 1;
             for (Map.Entry<String, Object> entry: o.entrySet()){
                 switch (comparison) {
-                    case 1:
+                    case Eloquent.EQUAL:
                         pstmt.setObject(i,entry.getValue(),typesSQL.get(entry.getKey()));
                         break;
-                    case 2:
+                    case Eloquent.LIKE:
                         pstmt.setObject(i,"%" + entry.getValue() + "%",typesSQL.get(entry.getKey()));
                         break;
                     default:
@@ -100,7 +113,6 @@ public class Eloquent extends Connector {
         }
         return vector;
     }
-
 
     public int insert(Object o,Map<String, Integer> typesSQL) throws NoSuchFieldException {
         Class<?> cls = o.getClass();
