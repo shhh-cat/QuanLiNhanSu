@@ -85,7 +85,7 @@ public class EmployeeGUI {
             }
 
             @Override
-            public void find(Map<String, Object> values) {
+            public void find() {
                 String column = String.valueOf(JOptionPane.showInputDialog(null,"Choose field you want to search:","Search",JOptionPane.INFORMATION_MESSAGE,null,columns,null));
                 Object value = (column.equals("gender"))
                     ? JOptionPane.showInputDialog(null,"Choose " + column + ":","Search", JOptionPane.INFORMATION_MESSAGE, null, new String[] {"Nam", "Nữ"},null)
@@ -129,5 +129,6 @@ public class EmployeeGUI {
     public static void main(String[] args) {
         EmployeeGUI employeeGUI = new EmployeeGUI();
         employeeGUI.show();
+
     }
 }

@@ -47,6 +47,7 @@ public class EmployeeDAL {
             value = Boolean.parseBoolean(String.valueOf(value.equals("Nam")));
             map.put(key, (boolean)value);
         }
+        else map.put(key,value);
         eloquent.where(Employee.class,map,comparison,getTypesSQL()).forEach(map1 -> {
             vector.add(new Employee(map1));
         });

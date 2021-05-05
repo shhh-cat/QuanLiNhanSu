@@ -1,5 +1,6 @@
 package GUI;
 
+import BLL.LoginBLL;
 import GUI.ActionInterface.LoginAction;
 import GUI.Layout.LoginLayout;
 
@@ -12,8 +13,7 @@ public class LoginGUI {
         loginLayout = new LoginLayout(new LoginAction() {
             @Override
             public void submit(String username, String password) {
-                JOptionPane.showMessageDialog(null,username);
-                JOptionPane.showMessageDialog(null,password);
+                if(LoginBLL.login(username,password)) JOptionPane.showMessageDialog(loginLayout,"OK");
             }
         });
     }

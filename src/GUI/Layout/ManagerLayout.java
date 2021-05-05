@@ -21,7 +21,7 @@ public class ManagerLayout extends JFrame implements ActionListener {
         if (e.getSource() == addBtn) action.add(getValueField());
         if (e.getSource() == updateBtn) action.update(getValueField(),table.getSelectedRow(),getTableRow(table.getSelectedRow()));
         if (e.getSource() == deleteBtn) action.delete(getValueField(),table.getSelectedRow());
-        if (e.getSource() == findBtn) action.find(getValueField());
+        if (e.getSource() == findBtn) action.find();
         if (e.getSource() == clearBtn) setValueField(-1);
         if (e.getSource() == allBtn) {
             allBtn.setEnabled(false);

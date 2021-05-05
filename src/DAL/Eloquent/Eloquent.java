@@ -77,7 +77,7 @@ public class Eloquent extends Connector {
             condition = condition.substring(0,condition.length()-1);
 
             pstmt = getPreparedStatement("SELECT * FROM "+ c.getSimpleName().toLowerCase() + condition);
-
+            System.out.println("SELECT * FROM "+ c.getSimpleName().toLowerCase() + condition);
             int i = 1;
             for (Map.Entry<String, Object> entry: o.entrySet()){
                 switch (comparison) {
@@ -92,6 +92,7 @@ public class Eloquent extends Connector {
                 }
 
             }
+
             rs = pstmt.executeQuery();
             Field[] fields = c.getDeclaredFields();
             while (rs.next()) {
@@ -181,7 +182,7 @@ public class Eloquent extends Connector {
                 preparedStatement.setObject(i++,entry.getValue(),typesSQL.get(entry.getKey()));
             }
 
-            preparedStatement.setTimestamp(i,Timestamp.valueOf(LocalDateTime.now()));
+            preparedStatement.setTimestamp(i+1,Timestamp.valueOf(LocalDateTime.now()));
             System.out.println(sql);
             int row = preparedStatement.executeUpdate();
             if (row == 1) {

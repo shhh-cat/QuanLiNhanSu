@@ -25,7 +25,8 @@ public class UserDAL {
         Eloquent eloquent = new Eloquent();
         Vector<User> vector = new Vector<>();
         Map<String, Object> map = new HashMap<>();
-        eloquent.where(Employee.class,map,comparison,getTypesSQL()).forEach(map1 -> {
+        map.put(key,value);
+        eloquent.where(User.class,map,comparison,getTypesSQL()).forEach(map1 -> {
             vector.add(new User(map1));
         });
         eloquent.close();
