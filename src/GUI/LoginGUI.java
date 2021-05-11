@@ -1,24 +1,33 @@
 package GUI;
 
 import BLL.LoginBLL;
-import GUI.ActionInterface.LoginAction;
 import GUI.Layout.LoginLayout;
-
-import javax.swing.*;
 
 public class LoginGUI {
     LoginLayout loginLayout;
 
-    public LoginGUI() {
-        loginLayout = new LoginLayout(new LoginAction() {
-            @Override
-            public void submit(String username, String password) {
-                if(LoginBLL.login(username,password)) JOptionPane.showMessageDialog(loginLayout,"OK");
-            }
-        });
+    public void hide() {
+        this.loginLayout.setVisible(false);
     }
 
-    public static void main(String[] args) {
-        new LoginGUI();
+    public void show() {
+        this.loginLayout.setVisible(true);
     }
+
+    public void dispose() {
+        loginLayout.dispose();
+    }
+
+    public LoginGUI(DashboardGUI dashboardGUI) {
+        loginLayout = new LoginLayout((username, password) -> {
+            dispose();
+            if(LoginBLL.login(username,password)) {
+                //JOptionPane.showMessageDialog(loginLayout,"OK");
+                dispose();
+                dashboardGUI.show();
+            }
+        });
+        dashboardGUI.show();
+    }
+
 }

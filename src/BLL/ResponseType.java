@@ -10,6 +10,19 @@ public class ResponseType {
     public static final int SUCCESS = 1;
     public static final int FAILED = -1;
 
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+
     public static boolean showResponse(Map<Integer, Object> res, Component parentComponent) {
         for (Map.Entry<Integer, Object> integerObjectEntry : res.entrySet()) {
             switch (integerObjectEntry.getKey()) {

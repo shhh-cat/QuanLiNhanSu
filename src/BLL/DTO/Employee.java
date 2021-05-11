@@ -1,5 +1,6 @@
 package BLL.DTO;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 public class Employee {
@@ -8,55 +9,49 @@ public class Employee {
     private String lastname;
     private String phonenumber;
     private String address;
-    private String ward;
-    private String district;
-    private String country;
     private boolean gender;
-    private String ethnicity;
-    private String religion;
     private String idnumber;
+    private int department_id;
+    private String position;
+    private int bonus_position;
+    private int salary;
+    private int project_id;
+    private LocalDate start_date;
 
-    public Employee( String firstname, String lastname, String phonenumber, String address, String ward, String district, String country, boolean gender, String ethnicity, String religion, String idnumber) {
+
+    public Employee(int id, String firstname, String lastname, String phonenumber, String address, boolean gender, String idnumber, int department_id, String position, int bonus_position, int salary, int project_id, LocalDate start_date) {
+        this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.phonenumber = phonenumber;
         this.address = address;
-        this.ward = ward;
-        this.district = district;
-        this.country = country;
         this.gender = gender;
-        this.ethnicity = ethnicity;
-        this.religion = religion;
         this.idnumber = idnumber;
-    }
-    public Employee(Map<String, Object> map) {
-        this.id = (int)map.get("id");
-        this.firstname = String.valueOf(map.get("firstname"));
-        this.lastname = String.valueOf(map.get("lastname"));
-        this.phonenumber = String.valueOf(map.get("phonenumber"));
-        this.address = String.valueOf(map.get("address"));
-        this.ward = String.valueOf(map.get("ward"));
-        this.district = String.valueOf(map.get("district"));
-        this.country = String.valueOf(map.get("country"));
-        this.gender = (boolean)map.get("gender");
-        this.ethnicity = String.valueOf(map.get("ethnicity"));
-        this.religion = String.valueOf(map.get("religion"));
-        this.idnumber = String.valueOf(map.get("idnumber"));
+        this.department_id = department_id;
+        this.position = position;
+        this.bonus_position = bonus_position;
+        this.salary = salary;
+        this.project_id = project_id;
+        this.start_date = start_date;
     }
 
-    public Employee(Map<String, Object> map,boolean noId) {
+    public Employee(Map<String, Object> map) {
+        if (map.containsKey("id"))
+            this.id = (int)(map.get("id"));
         this.firstname = String.valueOf(map.get("firstname"));
         this.lastname = String.valueOf(map.get("lastname"));
         this.phonenumber = String.valueOf(map.get("phonenumber"));
         this.address = String.valueOf(map.get("address"));
-        this.ward = String.valueOf(map.get("ward"));
-        this.district = String.valueOf(map.get("district"));
-        this.country = String.valueOf(map.get("country"));
         this.gender = (boolean)map.get("gender");
-        this.ethnicity = String.valueOf(map.get("ethnicity"));
-        this.religion = String.valueOf(map.get("religion"));
         this.idnumber = String.valueOf(map.get("idnumber"));
+        this.department_id = Integer.parseInt(String.valueOf(map.get("department_id")));
+        this.position = String.valueOf(map.get("position"));
+        this.bonus_position = Integer.parseInt(String.valueOf(map.get("bonus_position")));
+        this.salary = Integer.parseInt(String.valueOf(map.get("salary")));
+        this.project_id = Integer.parseInt(String.valueOf(map.get("project_id")));
+        this.start_date = (LocalDate)  map.get("start_date");
     }
+
 
     public int getId() {
         return id;
@@ -94,30 +89,6 @@ public class Employee {
         this.address = address;
     }
 
-    public String getWard() {
-        return ward;
-    }
-
-    public void setWard(String ward) {
-        this.ward = ward;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public boolean isGender() {
         return gender;
     }
@@ -126,21 +97,6 @@ public class Employee {
         this.gender = gender;
     }
 
-    public String getEthnicity() {
-        return ethnicity;
-    }
-
-    public void setEthnicity(String ethnicity) {
-        this.ethnicity = ethnicity;
-    }
-
-    public String getReligion() {
-        return religion;
-    }
-
-    public void setReligion(String religion) {
-        this.religion = religion;
-    }
 
     public String getIdnumber() {
         return idnumber;
@@ -157,13 +113,14 @@ public class Employee {
                 lastname,
                 phonenumber,
                 address,
-                ward,
-                district,
-                country,
                 gender ? "Nam" : "Nữ",
-                ethnicity,
-                religion,
-                idnumber
+                idnumber,
+                String.valueOf(department_id),
+                position,
+                String.valueOf(bonus_position),
+                String.valueOf(salary),
+                String.valueOf(project_id),
+                start_date.toString()
         };
     }
 }

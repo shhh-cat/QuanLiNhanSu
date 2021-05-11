@@ -42,7 +42,7 @@ public class EmployeeDetailDAL {
         Vector<EmployeeDetail> vector = new Vector<>();
         Map<String, Object> map = new HashMap<>();
         map.put(key,value);
-        eloquent.where(EmployeeDetail.class,map,comparison,getTypesSQL()).forEach(map1 -> {
+        eloquent.whereOr(EmployeeDetail.class,map,comparison,getTypesSQL()).forEach(map1 -> {
             vector.add(new EmployeeDetail(map1));
         });
         eloquent.close();

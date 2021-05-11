@@ -1,5 +1,6 @@
 package GUI.Layout;
 
+import GUI.ActionInterface.DashboardAction;
 import GUI.Ultilities.HighlightButton;
 
 import javax.imageio.ImageIO;
@@ -8,11 +9,14 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Objects;
 
-public class DashboardLayout extends JFrame {
+public class DashboardLayout extends JFrame implements ActionListener {
 
+    DashboardAction dashboardAction;
     Image background = ImageIO.read(Objects.requireNonNull(getClass().getResource("../../RES/Background/Background.jpg")));
     ImagePanel GUI = new ImagePanel(background,new BorderLayout(5,5));
     JLabel hello = new JLabel("Hi! ");
@@ -25,23 +29,28 @@ public class DashboardLayout extends JFrame {
     Image imgProject = ImageIO.read(Objects.requireNonNull(getClass().getResource("../../RES/Icon/project.png")));
     Image imgPayroll = ImageIO.read(Objects.requireNonNull(getClass().getResource("../../RES/Icon/payroll.png")));
     Image imgTimekeeping = ImageIO.read(Objects.requireNonNull(getClass().getResource("../../RES/Icon/timekeeping.png")));
+    Image imgExit = ImageIO.read(Objects.requireNonNull(getClass().getResource("../../RES/Icon/logout.png")));
     HighlightButton jButtonEmployee = new HighlightButton("Employee",new ImageIcon(imgEmployee));
     HighlightButton jButtonDepartment = new HighlightButton("Department",new ImageIcon(imgDepartment));
     HighlightButton jButtonProject = new HighlightButton("Project",new ImageIcon(imgProject));
     HighlightButton jButtonPayroll = new HighlightButton("Payroll",new ImageIcon(imgPayroll));
     HighlightButton jButtonTimekeeping = new HighlightButton("Timekeeping",new ImageIcon(imgTimekeeping));
+    HighlightButton jButtonExit = new HighlightButton("Exit",new ImageIcon(imgExit));
 
-    public DashboardLayout() throws IOException {
+    public DashboardLayout(DashboardAction dashboardAction) throws IOException {
+        this.dashboardAction = dashboardAction;
         addcomp();
         configuration();
+        listener();
     }
 
-    public void addcomp() {
+     void addcomp() {
         menu.add(jButtonEmployee);
         menu.add(jButtonDepartment);
         menu.add(jButtonPayroll);
         menu.add(jButtonProject);
         menu.add(jButtonTimekeeping);
+        menu.add(jButtonExit);
         GUI.add(hello,BorderLayout.NORTH);
         GUI.add(empty1,BorderLayout.WEST);
         GUI.add(empty2,BorderLayout.EAST);
@@ -50,7 +59,7 @@ public class DashboardLayout extends JFrame {
         this.setContentPane(GUI);
     }
 
-    public void configuration() throws IOException {
+     void configuration() throws IOException {
         empty1.setPreferredSize(new Dimension(100,100));
         empty1.setBackground(new Color(0,0,0,0));
         empty2.setPreferredSize(new Dimension(100,100));
@@ -58,7 +67,7 @@ public class DashboardLayout extends JFrame {
         empty3.setPreferredSize(new Dimension(100,100));
         empty3.setBackground(new Color(0,0,0,0));
         menu.setBackground(new Color(255,255,255,155));
-        menu.setBorder(new EmptyBorder(10, 10, 10, 10));
+        menu.setBorder(new EmptyBorder(25, 25, 25, 25));
         hello.setFont(new Font("Arial",Font.BOLD,40));
         hello.setHorizontalAlignment(SwingConstants.CENTER);
         try {
@@ -77,7 +86,7 @@ public class DashboardLayout extends JFrame {
         jButtonEmployee.setFont(new Font("Arial", Font.PLAIN, 30));
         jButtonEmployee.setVerticalTextPosition(SwingConstants.BOTTOM);
         jButtonEmployee.setHorizontalTextPosition(SwingConstants.CENTER);
-        jButtonEmployee.setHighlight(new Color(217, 83, 79, 100));
+        jButtonEmployee.setHighlight(new Color(226, 231, 46, 100));
 
 
         jButtonDepartment.setMargin(new Insets(20,20,20,20));
@@ -104,18 +113,47 @@ public class DashboardLayout extends JFrame {
         jButtonTimekeeping.setHorizontalTextPosition(SwingConstants.CENTER);
         jButtonTimekeeping.setHighlight(new Color(91, 192, 222, 100));
 
+        jButtonExit.setMargin(new Insets(20,20,20,20));
+        jButtonExit.setFont(new Font("Arial", Font.PLAIN, 30));
+        jButtonExit.setVerticalTextPosition(SwingConstants.BOTTOM);
+        jButtonExit.setHorizontalTextPosition(SwingConstants.CENTER);
+        jButtonExit.setHighlight(new Color(217, 83, 79, 100));
+
         //this.splitPane.setDividerLocation(0.8);
         this.setTitle("Dashboard");
 
         //this.setResizable(false);
 
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
-        this.setDefaultCloseOperation(HIDE_ON_CLOSE);
+        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this.setUndecorated(true);
+        getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+
     }
 
-    public static void main(String[] args) throws IOException {
-        new DashboardLayout();
+    void listener() {
+        jButtonEmployee.addActionListener(this);
+        jButtonDepartment.addActionListener(this);
+        jButtonPayroll.addActionListener(this);
+        jButtonProject.addActionListener(this);
+        jButtonTimekeeping.addActionListener(this);
+        jButtonExit.addActionListener(this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == jButtonEmployee)
+            dashboardAction.openEmployee();
+        if (e.getSource() == jButtonDepartment)
+            dashboardAction.openDepartment();
+        if (e.getSource() == jButtonPayroll)
+            dashboardAction.openPayroll();
+        if (e.getSource() == jButtonProject)
+            dashboardAction.openProject();
+        if (e.getSource() == jButtonTimekeeping)
+            dashboardAction.openTimekeeping();
+        if (e.getSource() == jButtonExit)
+            dashboardAction.openExit();
     }
 }
 

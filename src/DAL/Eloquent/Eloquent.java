@@ -55,7 +55,7 @@ public class Eloquent extends Connector {
         return vector;
     }
 
-    public Vector<Map<String, Object>> where(Class<?> c, Map<String, Object> o,int comparison,Map<String , Integer> typesSQL) {
+    public Vector<Map<String, Object>> whereAnd(Class<?> c, Map<String, Object> o,int comparison,Map<String , Integer> typesSQL) {
         ResultSet rs;
         PreparedStatement pstmt = null;
         Vector<Map<String, Object>> vector = new Vector<>();
@@ -64,17 +64,77 @@ public class Eloquent extends Connector {
             for (Map.Entry<String, Object> entry: o.entrySet()){
                 switch (comparison) {
                     case Eloquent.EQUAL:
-                        condition = condition.concat(entry.getKey() + " = ?,");
+                        condition = condition.concat(entry.getKey() + " = ? AND ");
                         break;
                     case Eloquent.LIKE:
-                        condition = condition.concat(entry.getKey() + " LIKE ?,");
+                        condition = condition.concat(entry.getKey() + " LIKE ? AND ");
                         break;
                     default:
                         break;
                 }
 
             }
-            condition = condition.substring(0,condition.length()-1);
+            condition = condition.substring(0,condition.length()-5);
+
+            pstmt = getPreparedStatement("SELECT * FROM "+ c.getSimpleName().toLowerCase() + condition);
+            System.out.println("SELECT * FROM "+ c.getSimpleName().toLowerCase() + condition);
+            int i = 1;
+            for (Map.Entry<String, Object> entry: o.entrySet()){
+                switch (comparison) {
+                    case Eloquent.EQUAL:
+                        pstmt.setObject(i,entry.getValue(),typesSQL.get(entry.getKey()));
+                        break;
+                    case Eloquent.LIKE:
+                        pstmt.setObject(i,"%" + entry.getValue() + "%",typesSQL.get(entry.getKey()));
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+            rs = pstmt.executeQuery();
+            Field[] fields = c.getDeclaredFields();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                for (Field field : fields) {
+                    map.put(field.getName(), rs.getObject(field.getName(),field.getType()));
+                }
+                vector.add(map);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return vector;
+    }
+
+    public Vector<Map<String, Object>> whereOr(Class<?> c, Map<String, Object> o,int comparison,Map<String , Integer> typesSQL) {
+        ResultSet rs;
+        PreparedStatement pstmt = null;
+        Vector<Map<String, Object>> vector = new Vector<>();
+        try {
+            String condition = " WHERE ";
+            for (Map.Entry<String, Object> entry: o.entrySet()){
+                switch (comparison) {
+                    case Eloquent.EQUAL:
+                        condition = condition.concat(entry.getKey() + " = ? OR ");
+                        break;
+                    case Eloquent.LIKE:
+                        condition = condition.concat(entry.getKey() + " LIKE ? OR ");
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            condition = condition.substring(0,condition.length()-4);
 
             pstmt = getPreparedStatement("SELECT * FROM "+ c.getSimpleName().toLowerCase() + condition);
             System.out.println("SELECT * FROM "+ c.getSimpleName().toLowerCase() + condition);
@@ -182,13 +242,22 @@ public class Eloquent extends Connector {
                 preparedStatement.setObject(i++,entry.getValue(),typesSQL.get(entry.getKey()));
             }
 
-            preparedStatement.setTimestamp(i+1,Timestamp.valueOf(LocalDateTime.now()));
+            preparedStatement.setTimestamp(i,Timestamp.valueOf(LocalDateTime.now()));
             System.out.println(sql);
             int row = preparedStatement.executeUpdate();
             if (row == 1) {
                 rs = preparedStatement.getGeneratedKeys();
-                if (rs.next())
+                if (rs.next()) {
+                    System.out.println("OK");
+                    System.out.println(rs.getInt(1));
                     rowAffected = rs.getInt(1);
+                }
+                else {
+                    System.out.println("Not anything Generated Keys");
+                    rowAffected = 1;
+                }
+
+
             }
         } catch (SQLException ee) {
             ee.printStackTrace();

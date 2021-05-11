@@ -11,5 +11,5 @@ public interface ManagerAction {
     public void find();
     public void sort(String column,int sort);
     public void showAll();
-
+    public void back();
 }

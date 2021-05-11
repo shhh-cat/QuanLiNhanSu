@@ -1,17 +1,22 @@
 package GUI.Layout;
 
 import GUI.ActionInterface.LoginAction;
+import GUI.LoginGUI;
+import GUI.Ultilities.HighlightButton;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class LoginLayout extends JFrame implements ActionListener {
+public class LoginLayout extends JFrame implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         loginAction.submit(tUser.getText(),tPass.getText());
     }
+
 
     LoginAction loginAction;
     JPanel panel = new JPanel();
@@ -19,7 +24,7 @@ public class LoginLayout extends JFrame implements ActionListener {
     JPanel ipanel2 = new JPanel();
     JLabel lUser = new JLabel("Enter username:"), lPass = new JLabel("Enter Password:");
     JTextField tUser = new JTextField(), tPass = new JPasswordField();
-    JButton bSubmit = new JButton("Login");
+    HighlightButton bSubmit = new HighlightButton("Login");
 
     public void addComp() {
         ipanel.add(lUser);ipanel.add(tUser);ipanel.add(lPass);ipanel.add(tPass);
@@ -41,7 +46,11 @@ public class LoginLayout extends JFrame implements ActionListener {
         tUser.setPreferredSize(new Dimension(150,25));
         tPass.setPreferredSize(new Dimension(150,25));
 
+        //bSubmit.setMargin(new Insets(10,10,10,10));
+        bSubmit.setHighlight(new Color(2, 117, 216,75));
+        bSubmit.setPreferredSize(new Dimension(70,30));
         bSubmit.setBounds(0,0,50,20);
+
 
         this.setTitle("Login");
         this.pack();
@@ -59,6 +68,8 @@ public class LoginLayout extends JFrame implements ActionListener {
     }
 
     public void listener() {
+        tUser.addKeyListener(this);
+        tPass.addKeyListener(this);
         bSubmit.addActionListener(this);
     }
 
@@ -69,4 +80,19 @@ public class LoginLayout extends JFrame implements ActionListener {
         this.listener();
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER)
+            loginAction.submit(tUser.getText(),tPass.getText());
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 }
