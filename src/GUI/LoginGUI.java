@@ -20,14 +20,14 @@ public class LoginGUI {
 
     public LoginGUI(DashboardGUI dashboardGUI) {
         loginLayout = new LoginLayout((username, password) -> {
-            dispose();
+            
             if(LoginBLL.login(username,password)) {
                 //JOptionPane.showMessageDialog(loginLayout,"OK");
                 dispose();
                 dashboardGUI.show();
+                dispose();
             }
         });
-        dashboardGUI.show();
     }
 
 }

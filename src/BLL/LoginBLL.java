@@ -18,7 +18,4 @@ public class LoginBLL {
         return false;
     }
 
-    public static void main(String[] args) {
-        LoginBLL.login("admin1","Vanthien.28042001");
-    }
 }

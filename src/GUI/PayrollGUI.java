@@ -7,6 +7,8 @@ import GUI.ActionInterface.PayrollAction;
 import GUI.Layout.ChooseEntitiesDialog;
 import GUI.Layout.PayrollLayout;
 
+import javax.swing.*;
+
 public class PayrollGUI implements BackDashboard {
     private final PayrollLayout payrollLayout;
     DashboardGUI dashboardGUI;
@@ -21,6 +23,10 @@ public class PayrollGUI implements BackDashboard {
 
             @Override
             public void another() {
+                if (EmployeeDAL.all(null).length == 0) {
+                    JOptionPane.showMessageDialog(null,"No any employee");
+                    return;
+                }
                 payrollLayout.dispose();
                 int id = Integer.parseInt(payrollLayout.getIDEmployee());
                 employee = EmployeeDAL.getField(id);
@@ -35,6 +41,10 @@ public class PayrollGUI implements BackDashboard {
     }
 
     public void show() {
+        if (EmployeeDAL.all(null).length == 0) {
+            JOptionPane.showMessageDialog(null,"No any employee");
+            return;
+        }
         dashboardGUI.dispose();
         int id = Integer.parseInt(this.payrollLayout.getIDEmployee());
         employee = EmployeeDAL.getField(id);
