@@ -22,7 +22,7 @@ public class DashboardGUI {
         dashboardLayout.dispose();
     }
 
-    public DashboardGUI(EmployeeGUI employeeGUI, DepartmentGUI departmentGUI, TimeKeepingGUI timeKeepingGUI, ProjectGUI projectGUI) throws IOException {
+    public DashboardGUI(EmployeeGUI employeeGUI, DepartmentGUI departmentGUI, TimeKeepingGUI timeKeepingGUI, ProjectGUI projectGUI, PayrollGUI payrollGUI) throws IOException {
         dashboardLayout = new DashboardLayout(new DashboardAction() {
             @Override
             public void openEmployee() {
@@ -38,7 +38,8 @@ public class DashboardGUI {
 
             @Override
             public void openPayroll() {
-
+                payrollGUI.show();
+                departmentGUI.dispose();
             }
 
             @Override

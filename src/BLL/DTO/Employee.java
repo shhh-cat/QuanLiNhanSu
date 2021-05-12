@@ -102,6 +102,58 @@ public class Employee {
         return idnumber;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getDepartment_id() {
+        return department_id;
+    }
+
+    public void setDepartment_id(int department_id) {
+        this.department_id = department_id;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public int getBonus_position() {
+        return bonus_position;
+    }
+
+    public void setBonus_position(int bonus_position) {
+        this.bonus_position = bonus_position;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+
+    public int getProject_id() {
+        return project_id;
+    }
+
+    public void setProject_id(int project_id) {
+        this.project_id = project_id;
+    }
+
+    public LocalDate getStart_date() {
+        return start_date;
+    }
+
+    public void setStart_date(LocalDate start_date) {
+        this.start_date = start_date;
+    }
+
     public void setIdnumber(String idnumber) {
         this.idnumber = idnumber;
     }
