@@ -3,6 +3,7 @@ package BLL;
 import DAL.Eloquent.Eloquent;
 import DAL.TimeKeepingDAL;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,15 @@ public class TimeKeepingBLL {
         if (isNum != null) {
             response.put(ResponseType.INVALID_DATA,isNum);
             return response;
+        }
+
+        //check duplicate
+        String[][] dates = TimeKeepingDAL.get("employee_id",values.get("employee_id"),Eloquent.EQUAL);
+        for (String[] date : dates) {
+            if (date[1].equals(String.valueOf(values.get("date")))) {
+                response.put(ResponseType.INVALID_DATA,"Employee has id: "+values.get("id")+ " attended on "+values.get("date"));
+                return response;
+            }
         }
 
         int i = TimeKeepingDAL.insert(values);
