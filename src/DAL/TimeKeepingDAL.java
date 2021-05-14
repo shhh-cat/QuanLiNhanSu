@@ -4,6 +4,7 @@ import BLL.DTO.TimeKeeping;
 import DAL.Eloquent.Eloquent;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +82,23 @@ public class TimeKeepingDAL {
             result[i] = vector.get(i).toStrings();
         }
         return result;
+    }
+
+    public static TimeKeeping[] getObjects(String key, Object value, int comparison) {
+
+        Eloquent eloquent = new Eloquent();
+        Vector<TimeKeeping> vector = new Vector<>();
+        Map<String, Object> map = new HashMap<>();
+        map.put(key,value);
+        eloquent.whereOr(TimeKeeping.class,map,comparison,getTypesSQL()).forEach(map1 -> {
+            vector.add(new TimeKeeping(map1));
+        });
+        eloquent.close();
+        TimeKeeping[] timeKeepings = new TimeKeeping[vector.size()];
+        for (int i = 0; i < vector.size(); i++) {
+            timeKeepings[i] = vector.get(i);
+        }
+        return timeKeepings;
     }
 
 

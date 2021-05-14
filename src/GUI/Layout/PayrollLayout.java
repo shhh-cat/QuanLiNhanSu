@@ -33,6 +33,7 @@ import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
+import java.util.List;
 
 public class PayrollLayout extends JFrame implements ActionListener {
 
@@ -172,7 +173,8 @@ public class PayrollLayout extends JFrame implements ActionListener {
         return chooseEntitiesDialog.run();
     }
 
-    public void updateData(Employee employee) {
+    public void updateData(Employee employee,int month, int year) {
+        LocalDate now = LocalDate.now();
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
         jLabel.setText("Payroll of "+ employee.getFirstname());
@@ -181,31 +183,47 @@ public class PayrollLayout extends JFrame implements ActionListener {
 
         Department department = DepartmentDAL.getField(employee.getDepartment_id());
         Project project = ProjectDAL.getField(employee.getProject_id());
-        String[][] timeKeeping = TimeKeepingDAL.get("employee_id",employee.getId(), Eloquent.EQUAL);
+        TimeKeeping[] timeKeepings = TimeKeepingDAL.getObjects("employee_id",employee.getId(), Eloquent.EQUAL);
+        List<String[]> timeKeeping = new ArrayList<>();
+
+        for (TimeKeeping timeKeepingg : timeKeepings) {
+            if (timeKeepingg.getDate().getMonthValue() == month && timeKeepingg.getDate().getYear() == year)
+                timeKeeping.add(timeKeepingg.toStrings());
+        }
         ((JTextField) emplName.getInput()).setText(employee.getFirstname() + " " + employee.getLastname());
+        ((JTextField) emplName.getInput()).setEditable(false);
         ((JTextField) deptName.getInput()).setText(department.getName());
+        ((JTextField) deptName.getInput()).setEditable(false);
         ((JTextField) projName.getInput()).setText(project.getName());
+        ((JTextField) projName.getInput()).setEditable(false);
         ((JTextField) salary.getInput()).setText(formatter.format(employee.getSalary()));
-        LocalDate now = LocalDate.now();
+        ((JTextField) salary.getInput()).setEditable(false);
         Period period = Period.between(employee.getStart_date(),now);
         ((JTextField) seniority.getInput()).setText(String.valueOf(period.getMonths()));
+        ((JTextField) seniority.getInput()).setEditable(false);
         ((JTextField) position.getInput()).setText(employee.getPosition());
+        ((JTextField) position.getInput()).setEditable(false);
         ((JTextField) bonus_position.getInput()).setText(employee.getBonus_position() + "%");
-        ((JTextField) numWork.getInput()).setText(String.valueOf(timeKeeping.length));
+        ((JTextField) bonus_position.getInput()).setEditable(false);
+        ((JTextField) numWork.getInput()).setText(String.valueOf(timeKeeping.size()));
+        ((JTextField) numWork.getInput()).setEditable(false);
         int standardWork = 26;
         int salaryDay = employee.getSalary() / 26;
         ((JTextField) stanDay.getInput()).setText(String.valueOf(standardWork));
+        ((JTextField) stanDay.getInput()).setEditable(false);
         ((JTextField) salaryDays.getInput()).setText(formatter.format(salaryDay));
+        ((JTextField) salaryDays.getInput()).setEditable(false);
         int basicSalary = 0;
         for (String[] strings : timeKeeping) {
             int violation = Integer.parseInt(strings[2]);
             basicSalary += salaryDay - (salaryDay * violation / 100);
         }
         ((JTextField) this.basicSalary.getInput()).setText(formatter.format(basicSalary));
+        ((JTextField) this.basicSalary.getInput()).setEditable(false);
         int totalSalary = basicSalary + basicSalary * employee.getBonus_position() / 100;
         ((JTextField) this.totalSalary.getInput()).setText(formatter.format(totalSalary));
-        updateTable(timeKeeping);
-
+        ((JTextField) this.totalSalary.getInput()).setEditable(false);
+        updateTable(timeKeeping.toArray(new String[0][]));
     }
 
     void addcomp(){

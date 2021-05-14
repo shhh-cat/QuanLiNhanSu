@@ -92,6 +92,8 @@ public class EmployeeDAL {
         return result;
     }
 
+
+
     public static Employee getField(int id) {
 
         Eloquent eloquent = new Eloquent();
@@ -119,7 +121,6 @@ public class EmployeeDAL {
         }
         return i;
     }
-
     public static int update(Map<String, Object> data, int id) {
         data.put("gender", ((String) data.get("gender")).equals("Nam"));
         Eloquent eloquent = new Eloquent();

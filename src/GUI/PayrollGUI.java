@@ -8,6 +8,8 @@ import GUI.Layout.ChooseEntitiesDialog;
 import GUI.Layout.PayrollLayout;
 
 import javax.swing.*;
+import java.awt.*;
+import java.time.LocalDate;
 
 public class PayrollGUI implements BackDashboard {
     private final PayrollLayout payrollLayout;
@@ -29,9 +31,18 @@ public class PayrollGUI implements BackDashboard {
                 }
                 payrollLayout.dispose();
                 int id = Integer.parseInt(payrollLayout.getIDEmployee());
+                int month;
+                int year;
+                try {
+                    month = (int) JOptionPane.showInputDialog(payrollLayout, "Please choose MONTH: ", "Month of Payroll", JOptionPane.INFORMATION_MESSAGE, null, new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, LocalDate.now().getMonthValue());
+                    year = (int) JOptionPane.showInputDialog(payrollLayout, "Please choose YEAR: ", "Year of Payroll", JOptionPane.INFORMATION_MESSAGE, null, new Integer[]{2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021}, LocalDate.now().getYear());
+                } catch (NullPointerException e) {
+                    dashboardGUI.show();
+                    return;
+                }
                 employee = EmployeeDAL.getField(id);
                 payrollLayout.setVisible(true);
-                payrollLayout.updateData(employee);
+                payrollLayout.updateData(employee,month,year);
             }
         });
     }
@@ -47,9 +58,18 @@ public class PayrollGUI implements BackDashboard {
         }
         dashboardGUI.dispose();
         int id = Integer.parseInt(this.payrollLayout.getIDEmployee());
+        int month;
+        int year;
+        try {
+            month = (int) JOptionPane.showInputDialog(payrollLayout, "Please choose MONTH: ", "Month of Payroll", JOptionPane.INFORMATION_MESSAGE, null, new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, LocalDate.now().getMonthValue());
+            year = (int) JOptionPane.showInputDialog(payrollLayout, "Please choose YEAR: ", "Year of Payroll", JOptionPane.INFORMATION_MESSAGE, null, new Integer[]{2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021}, LocalDate.now().getYear());
+        } catch (NullPointerException e) {
+            dashboardGUI.show();
+            return;
+        }
         employee = EmployeeDAL.getField(id);
-        this.payrollLayout.setVisible(true);
-        this.payrollLayout.updateData(employee);
+        payrollLayout.setVisible(true);
+        payrollLayout.updateData(employee,month,year);
 
 
     }
