@@ -146,7 +146,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `username`, `password`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'admin', '$2a$12$TtrZGPVfwVbpBjYJDqiCM.3P.ej3JDgHEctrf0w/Z1OF3hiYL7.hC', 'Thien dep trai', '2021-04-23 08:14:27', '2021-04-23 08:14:27');
+(1, 'admin', '$2a$10$0gthJlSH5DKtUS4qURKtgerSQYpts9p3J.WFcggBMvmG4KwYyzYji', 'Admin', '2021-04-23 08:14:27', '2021-04-23 08:14:27');
 
 --
 -- Chỉ mục cho các bảng đã đổ
